@@ -15,11 +15,14 @@ RUN git clone --branch 3.0-stable --depth 1 https://github.com/redmine/redmine.g
 
 WORKDIR /app/redmine
 
-COPY config/secret_token.rb ./config/initializers/
-COPY config/database.yml    ./config/
-COPY config/Gemfile.local   ./
+COPY config/Gemfile.local ./
+COPY config/database.yml ./config/
 
-RUN RUBYOPT="-rrubygems/gem_dependencies" bundle install --without development test
+RUN RUBYOPT="-rrubygems/gem_dependencies" bundle install --without development test && \
+    rm -rf /var/cache/apk/*
+
+COPY config/secret_token.rb ./config/initializers/
 
 EXPOSE 8080
+
 CMD ["bundle", "exec", "unicorn"]
